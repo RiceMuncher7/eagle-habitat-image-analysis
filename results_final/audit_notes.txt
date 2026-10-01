@@ -1,0 +1,171 @@
+AUDIT NOTES — Classical vs Deep Learning (DL) Disagreement Review
+Project: Eagle habitat photo analysis
+Dataset: photos\converted (ROI bottom 65%)
+Goal: Document when/why Classical and DL disagree on water_frac and vegetation_frac.
+
+Key:
+- Classical = heuristic/threshold segmentation
+- DL = semantic segmentation (SegFormer ADE20K label grouping)
+- Failure mode tags (use one): REFLECTION, SHADOW, HAZE, BROWN_VEG, SHORELINE, SNOW_ICE, SKY_BIAS, LOW_LIGHT, MOTION_BLUR, MODEL_LABELING
+
+-------------------------------------------------------------------------------
+
+ENTRY 01
+File: [photos/converted/_DSC1035.jpg]
+Year: [2024]
+Metric: [water_frac]
+Classical value: [0.0001226551226551]
+DL value: [0.983119451353424]
+Absolute difference: [0.982996796230769]
+
+Visual reality: ROI is mostly calm water with strong shoreline reflections, plus brown leafless vegetation and a muddy bank in the background.
+Likely failure mode: REFLECTION
+Explanation: Classical likely under-counted water because the reflected water surface is muted and mixed with brown shoreline colors, so it does not strongly match the water color thresholds. DL likely counted most of the ROI as water because the large smooth reflective surface is semantically consistent with water, even though shoreline reflections make the boundary ambiguous.
+More plausible output: Unclear
+Confidence (0–2): 1
+
+-------------------------------------------------------------------------------
+
+ENTRY 02
+File: [photos/converted/DSC09671.jpg]
+Year: [2019]
+Metric: [vegetation_frac]
+Classical value: [0.959658681556196]
+DL value: [0.0000]
+Absolute difference: [0.959658681556196]
+
+Visual reality: ROI is dominated by bare tree branches/trunks against a clear blue sky, with no visible water and only small patches of snow/ice on bark.
+Likely failure mode: BROWN_VEG
+Explanation: Classical likely under-counted vegetation because its vegetation rule is color/HSV-based and leafless winter branches are gray/brown rather than green. DL may over-count vegetation by labeling most branches/trunks as “vegetation/tree” even though it’s winter canopy structure rather than leafy cover, but that is still semantically vegetation.
+More plausible output: DL
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
+
+ENTRY 03
+File: [photos/converted/_DSC0183.jpg]
+Year: [2025]
+Metric: [vegetation_frac]
+Classical value: [0.949159544159544]
+DL value: [0.0000]
+Absolute difference: [0.949159544159544]
+
+Visual reality: ROI is almost entirely clear blue sky with a single leafless tree trunk/branches and the eagle perched near the top; no water, snow, or ground is visible.
+Likely failure mode: SKY_BIAS
+Explanation: Classical likely under-counted vegetation because most pixels are sky and the small amount of gray-brown trunk does not meet green/dry-veg thresholds consistently. DL may over-count vegetation by labeling the bare trunk/branches as “tree/vegetation” despite the scene being mostly sky, but that is semantically correct for the non-sky pixels.
+More plausible output: DL
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
+
+ENTRY 04
+File: [photos/converted/DSC06026.jpg]
+Year: [2025]
+Metric: [vegetation_frac]
+Classical value: [0.942948717948718]
+DL value: [0.0000]
+Absolute difference: [0.942948717948718]
+
+Visual reality: ROI is almost entirely clear blue sky with a few leafless branches and the eagle perched; no water, snow/ice, or ground is visible.
+Likely failure mode: SKY_BIAS
+Explanation: Classical likely under-counted vegetation because most pixels are sky and the gray-brown branches do not consistently satisfy vegetation color thresholds. DL may over-count vegetation by labeling branches as “tree/vegetation” despite the scene being dominated by sky, but that is semantically correct for the non-sky pixels.
+More plausible output: DL
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
+
+ENTRY 05
+File: [photos/converted/DSC09243.jpg]
+Year: [2018]
+Metric: [water_frac]
+Classical value: [0.939846001440922]
+DL value: [0.0000]
+Absolute difference: [0.939846001440922]
+
+Visual reality: ROI is dominated by open blue sky with a flying eagle, and the lower edge includes urban structures/cranes; no visible water or vegetation is present.
+Likely failure mode: SKY_BIAS
+Explanation: Classical likely produced very low water and vegetation values because almost all pixels are sky, which is appropriate for this scene. DL may over-count non-target classes or create small false positives near the building/crane edges because the scene is dominated by sky and contains urban objects that do not relate to the habitat metrics.
+More plausible output: Classical
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
+
+ENTRY 06
+File: [photos/converted/SONY_ILCE-7RM5_2023-01-29_164923965440.jpg]
+Year: [2023]
+Metric: [vegetation_frac]
+Classical value: [0.002129329004329]
+DL value: [0.993424077058426]
+Absolute difference: [0.991294748054097]
+
+Visual reality: ROI shows a snowy woodland scene with extensive snow/ice cover on the ground and leafless trees in the background; no open water is visible.
+Likely failure mode: SNOW_ICE
+Explanation: Classical likely miscounted vegetation because the scene is dominated by bright, low-saturation snow and gray tree trunks, which can suppress vegetation thresholds and/or cause snow–ground confusion. DL may miscount by labeling large snow-covered areas as “ground” or “other” rather than a snow/ice class, or by confusing pale snow with sky/bright background in low-contrast regions.
+More plausible output: DL
+Confidence (0–2): 1
+
+-------------------------------------------------------------------------------
+
+ENTRY 07
+File: [photos/converted/DSC08669.jpg]
+Year: [2019]
+Metric: [water_frac]
+Classical value: [0.0008456412103746]
+DL value: [0.95051096165158]
+Absolute difference: [0.949665320441205]
+
+Visual reality: ROI contains mostly frozen/partially frozen water in the foreground with a snowy/rocky shoreline and visible built structures (buildings) in the background; vegetation is minimal and leafless.
+Likely failure mode: SHORELINE
+Explanation: Classical likely under-counted water because frozen/partially frozen water and snow-covered shoreline are bright, gray, and low-saturation, so they do not match the water threshold consistently. DL likely counted much of the frozen surface as water because semantically it belongs to the river/lake surface, even though ice and shoreline details make the class boundary ambiguous.
+More plausible output: Unclear
+Confidence (0–2): 1
+
+-------------------------------------------------------------------------------
+
+ENTRY 08
+File: [photos/converted/_DSC1035.jpg]
+Year: [2024]
+Metric: [water_frac]
+Classical value: [0.875291305916305]
+DL value: [0.0000]
+Absolute difference: [0.875291305916305]
+
+Visual reality: ROI is mostly calm water with a mirrored shoreline reflection, and the background is leafless/brown vegetation and muddy/rocky bank; no snow is visible.
+Likely failure mode: REFLECTION
+Explanation: Classical may over-count water because large reflective regions and dark mirrored tree shapes can still satisfy the water color/brightness rules, causing leakage into reflection areas. DL may under/over-count water because it must decide whether reflected trees belong to “water” or “vegetation/ground,” and semantic models often handle reflections inconsistently.
+More plausible output: Unclear
+Confidence (0–2): 1
+
+-------------------------------------------------------------------------------
+
+ENTRY 09
+File: [photos/converted/_DSC0218.jpg]
+Year: [2022]
+Metric: [vegetation_frac]
+Classical value: [0.0198728354978354]
+DL value: [0.820675259761284]
+Absolute difference: [0.800802424263449]
+
+Visual reality: ROI is dominated by blurred leafless trees/brush in the background with no clearly visible open water, snow, or ground; the eagle is the main foreground subject.
+Likely failure mode: BROWN_VEG
+Explanation: Classical likely under-counted vegetation because the background vegetation is mostly gray-brown, blurred, and low-saturation rather than green, so it may fail color-threshold vegetation rules. DL may count more vegetation because it can semantically recognize tree/brush structure even when the vegetation is leafless and not green.
+More plausible output: DL
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
+
+ENTRY 10
+File: [photos/converted/_DSC0127.jpg]
+Year: [2024]
+Metric: [vegetation_frac]
+Classical value: [0.175419372294372]
+DL value: [0.929707834016914]
+Absolute difference: [0.754288461722542]
+
+Visual reality: ROI is dominated by dense, leafless gray-brown trees and branches with an overcast sky; no visible open water, snow, or shoreline is present.
+Likely failure mode: BROWN_VEG
+Explanation: Classical likely under-counted vegetation because the trees are leafless, dark, and low-saturation, so they do not satisfy green vegetation thresholds. DL likely counted more vegetation because the model can semantically recognize tree structure even when the vegetation is brown/gray rather than green.
+More plausible output: DL
+Confidence (0–2): 2
+
+-------------------------------------------------------------------------------
